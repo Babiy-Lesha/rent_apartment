@@ -1,4 +1,4 @@
-package org.example.rent_apartment;
+package org.example.product_apartment;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -6,10 +6,10 @@ import org.springframework.cloud.client.discovery.EnableDiscoveryClient;
 
 @SpringBootApplication
 @EnableDiscoveryClient
-public class RentApartmentApplication {
+public class ProductApartmentApplication {
 
-	public static void main(String[] args) {
-		SpringApplication.run(RentApartmentApplication.class, args);
-	}
+    public static void main(String[] args) {
+        SpringApplication.run(ProductApartmentApplication.class, args);
+    }
 
 }
