@@ -1,0 +1,15 @@
+version: "3"
+
+services:
+  database:
+    image: postgres
+    restart: always
+    environment:
+      POSTGRES_DB: rent_apartment_db
+      POSTGRES_USER: db
+      POSTGRES_PASSWORD: db
+    ports:
+      - "5460:5432"
+
+volumes:
+  db:
