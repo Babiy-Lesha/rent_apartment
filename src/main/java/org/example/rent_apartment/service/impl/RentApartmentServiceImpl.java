@@ -19,7 +19,6 @@ import org.example.rent_apartment.repository.PhotoApartmentRepository;
 import org.example.rent_apartment.service.IntegrationService;
 import org.example.rent_apartment.service.RentApartmentService;
 import org.springframework.stereotype.Service;
-import org.springframework.web.client.RestTemplate;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.ArrayList;
@@ -59,9 +58,8 @@ public class RentApartmentServiceImpl implements RentApartmentService {
         return REGISTRATION_APARTMENT_SUCCESS;
     }
 
-    @Override
-    public String deleteAddressApartmentByName(String nameApartment) {
-        addressRepository.deleteByNameApartment(nameApartment);
+    public String deleteAddressApartmentById(Long id) {
+        addressRepository.deleteById(id);
         return APARTMENT_DELETE_SUCCESS;
     }
 
@@ -88,7 +86,6 @@ public class RentApartmentServiceImpl implements RentApartmentService {
             listApartments = apartmentRoomRepository.findById(apartmentInfoDto.getApartmentId())
                     .map(Collections::singletonList)
                     .orElseGet(() -> showApartmentsByUserLocation(apartmentInfoDto));
-
         } else {
             listApartments = showApartmentsByUserLocation(apartmentInfoDto);
         }
@@ -119,7 +116,7 @@ public class RentApartmentServiceImpl implements RentApartmentService {
     }
 
     private boolean checkInputLongitudeAndLatitude (RequestApartmentInfoDto apartmentInfoDto) {
-        return apartmentInfoDto.getLatitude().isEmpty() || apartmentInfoDto.getLongitude().isEmpty();
+        return isNull(apartmentInfoDto.getLatitude()) || isNull(apartmentInfoDto.getLongitude()) || apartmentInfoDto.getLatitude().isEmpty() || apartmentInfoDto.getLongitude().isEmpty();
     }
 
     private String showCityByUserLocation(String longitude, String latitude) {
@@ -134,7 +131,8 @@ public class RentApartmentServiceImpl implements RentApartmentService {
     private String getCityUserByLocation(String jsonUserLocationInfo) {
         try {
             /**
-             * посмотреть что там не только city передается
+             * посмотреть что там не только city передается "town" Korkino (54.892493+61.393049)
+             * Если не существующая долгота то results []
              */
             ObjectMapper mapper = new ObjectMapper();
             JsonNode rootNode = mapper.readTree(jsonUserLocationInfo);

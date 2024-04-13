@@ -13,7 +13,7 @@ import lombok.NoArgsConstructor;
 public class InfoApartmentRoomEntity {
 
     @Id
-    @SequenceGenerator(name="apartment_room_infoSequence", sequenceName="apartment_room_info_sequence", allocationSize = 1, initialValue = 2)
+    @SequenceGenerator(name="apartment_room_infoSequence", sequenceName="apartment_room_info_sequence", allocationSize = 1, initialValue = 8)
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator="apartment_room_infoSequence")
     @Column(name = "id")
     private Long id;

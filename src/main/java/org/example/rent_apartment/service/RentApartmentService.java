@@ -10,7 +10,7 @@ public interface RentApartmentService {
 
     String addApartment (String token, InfoApartmentDto infoApartmentDto);
 
-    String deleteAddressApartmentByName (String nameApartment);
+    String deleteAddressApartmentById(Long id);
 
     String addPhotoApp (String apartmentName, MultipartFile photo);
 
