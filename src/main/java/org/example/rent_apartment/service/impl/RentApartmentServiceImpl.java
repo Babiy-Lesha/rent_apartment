@@ -1,8 +1,8 @@
 package org.example.rent_apartment.service.impl;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import org.example.rent_apartment.exception.ApartmentException;
 import org.example.rent_apartment.mapper.RentApartmentMapper;
@@ -18,10 +18,7 @@ import org.example.rent_apartment.repository.IntegrationInfoRepository;
 import org.example.rent_apartment.repository.PhotoApartmentRepository;
 import org.example.rent_apartment.service.IntegrationService;
 import org.example.rent_apartment.service.RentApartmentService;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpMethod;
 import org.springframework.stereotype.Service;
-import org.springframework.web.client.RestTemplate;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.ArrayList;
@@ -32,21 +29,18 @@ import java.util.stream.Collectors;
 import static java.util.Objects.isNull;
 import static org.example.rent_apartment.app_const.AppConst.*;
 import static org.example.rent_apartment.exception.response_status.CustomStatusResponse.*;
-import com.fasterxml.jackson.databind.ObjectMapper;
 
 @Service
 @RequiredArgsConstructor
 public class RentApartmentServiceImpl implements RentApartmentService {
 
     private final InfoAddressRepository addressRepository;
-    private final RentApartmentMapper rentApartmentMapper;
     private final InfoApartmentRoomRepository apartmentRoomRepository;
-
     private final PhotoApartmentRepository photoRepository;
     private final IntegrationInfoRepository integratorInfoRepository;
+
+    private final RentApartmentMapper rentApartmentMapper;
     private final IntegrationService integrationService;
-    RestTemplate restTemplate = new RestTemplate();
-    //    private final ApartmentMapper apartmentMapper;
 
     @Override
     public String addApartment(String token, InfoApartmentDto infoApartmentDto) {
@@ -56,20 +50,17 @@ public class RentApartmentServiceImpl implements RentApartmentService {
             throw new ApartmentException(APARTMENT_EXISTS, NOT_UNIQ_ADDRES);
         }
 
-//        InfoApartmentEntity addressEntity = apartmentMapper.apartmentDtoToApartmentEntity(infoApartmentDto);
         InfoAddresEntity addressEntity = rentApartmentMapper.apartmentDtoToApartmentEntity(infoApartmentDto);
         InfoApartmentRoomEntity infoApartmentRoomEntity = rentApartmentMapper.roomDtoToRoomEntity(infoApartmentDto);
 
         addressEntity.setApartment(infoApartmentRoomEntity);
         addressRepository.save(addressEntity);
-
         return REGISTRATION_APARTMENT_SUCCESS;
     }
 
-    @Override
-    public String deleteAddressApartmentByName(String nameApartment) {
-        addressRepository.deleteByNameApartment(nameApartment);
-        return "апартамент удален";
+    public String deleteAddressApartmentById(Long id) {
+        addressRepository.deleteById(id);
+        return APARTMENT_DELETE_SUCCESS;
     }
 
     @Override
@@ -82,40 +73,37 @@ public class RentApartmentServiceImpl implements RentApartmentService {
 
         PhotoApartmentEntity photoEntity = new PhotoApartmentEntity();
         photoEntity.setPhotoName("фотография апартамента");
-        String codePhoto = Base64Service.encodeRentAppPhoto(photo);
-        photoEntity.setEncodePhoto(codePhoto);
+        String encodePhoto = Base64Service.encodeRentAppPhoto(photo);
+        photoEntity.setEncodePhoto(encodePhoto);
         photoRepository.save(photoEntity);
-
         return PHOTO_ADD_SUCCESS;
     }
 
     @Override
     public List<InfoApartmentDto> showApartments(RequestApartmentInfoDto apartmentInfoDto) {
-
-        /**
-         * если передаются только широта и долгота, то выгружаем лист апаратментов
-         */
+        List<InfoApartmentRoomEntity> listApartments;
         if(!isNull(apartmentInfoDto.getApartmentId())) {
-            List<InfoApartmentDto> listApartmentDto = new ArrayList<>();
-            List<InfoApartmentRoomEntity> listApartments = apartmentRoomRepository.findById(apartmentInfoDto.getApartmentId())
+            listApartments = apartmentRoomRepository.findById(apartmentInfoDto.getApartmentId())
                     .map(Collections::singletonList)
                     .orElseGet(() -> showApartmentsByUserLocation(apartmentInfoDto));
-
-            for(InfoApartmentRoomEntity apartment : listApartments) {
-                InfoApartmentDto infoApartmentDto = rentApartmentMapper.apartmentDtoToApartmentEntity(apartment.getAddress(), apartment);
-                listApartmentDto.add(infoApartmentDto);
-            }
-            return listApartmentDto;
+        } else {
+            listApartments = showApartmentsByUserLocation(apartmentInfoDto);
         }
-        return new ArrayList<>();
+        return rentApartmentMapperList(listApartments);
+    }
+
+    private List<InfoApartmentDto> rentApartmentMapperList (List<InfoApartmentRoomEntity> listApartments) {
+        List<InfoApartmentDto> listApartmentDto = new ArrayList<>();
+        for(InfoApartmentRoomEntity apartment : listApartments) {
+            InfoApartmentDto infoApartmentDto = rentApartmentMapper.apartmentDtoToApartmentEntity(apartment.getAddress(), apartment);
+            listApartmentDto.add(infoApartmentDto);
+        }
+        return listApartmentDto;
     }
 
     private List<InfoApartmentRoomEntity> showApartmentsByUserLocation(RequestApartmentInfoDto apartmentInfoDto) {
-        /**
-         * в отдельный метод
-         */
-        if (apartmentInfoDto.getLatitude().isEmpty() || apartmentInfoDto.getLongitude().isEmpty()) {
-            return new ArrayList<>();
+        if (checkInputLongitudeAndLatitude(apartmentInfoDto)) {
+            throw new ApartmentException(NOT_INPUT_LOCATION, BAD_INPUT_LOCATION);
         }
 
         String cityByUserLocation = showCityByUserLocation(apartmentInfoDto.getLongitude(), apartmentInfoDto.getLatitude());
@@ -125,6 +113,10 @@ public class RentApartmentServiceImpl implements RentApartmentService {
                     .collect(Collectors.toList());
         }
         return new ArrayList<>();
+    }
+
+    private boolean checkInputLongitudeAndLatitude (RequestApartmentInfoDto apartmentInfoDto) {
+        return isNull(apartmentInfoDto.getLatitude()) || isNull(apartmentInfoDto.getLongitude()) || apartmentInfoDto.getLatitude().isEmpty() || apartmentInfoDto.getLongitude().isEmpty();
     }
 
     private String showCityByUserLocation(String longitude, String latitude) {
@@ -139,7 +131,8 @@ public class RentApartmentServiceImpl implements RentApartmentService {
     private String getCityUserByLocation(String jsonUserLocationInfo) {
         try {
             /**
-             * посмотреть что там не только city передается
+             * посмотреть что там не только city передается "town" Korkino (54.892493+61.393049)
+             * Если не существующая долгота то results []
              */
             ObjectMapper mapper = new ObjectMapper();
             JsonNode rootNode = mapper.readTree(jsonUserLocationInfo);

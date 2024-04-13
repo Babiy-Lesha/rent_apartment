@@ -17,7 +17,7 @@ import java.time.LocalDateTime;
 public class UserInfoEntity {
 
     @Id
-    @SequenceGenerator(name="user_infoSequence", sequenceName="user_info_sequence", allocationSize = 1, initialValue = 2)
+    @SequenceGenerator(name="user_infoSequence", sequenceName="user_info_sequence", allocationSize = 1, initialValue = 9)
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator="user_infoSequence")
     @Column(name = "id")
     private Long id;

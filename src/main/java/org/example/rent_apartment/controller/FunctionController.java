@@ -27,8 +27,8 @@ public class FunctionController {
     }
 
     @PostMapping(URL_DELETE_ADDRESS_APARTMENT)
-    public String deleteAddressApartment(@RequestParam String nameApartment) {
-        return rentApartment.deleteAddressApartmentByName(nameApartment);
+    public String deleteAddressApartment(@RequestParam Long id) {
+        return rentApartment.deleteAddressApartmentById(id);
     }
 
     @PostMapping(URL_ADD_PHOTO_APARTMENT)

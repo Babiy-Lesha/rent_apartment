@@ -17,6 +17,7 @@ public class CustomStatusResponse {
      */
 
     public static final int NOT_UNIQ_ADDRES = 601;
+    public static final int BAD_INPUT_LOCATION = 602;
 
  /**
   * message error
@@ -28,4 +29,5 @@ public class CustomStatusResponse {
  public static final String LOGIN_NO_EXISTS = "пользователя с таким логином нет";
  public static final String INCORRECT_PASSWORD = "неверный пароль";
  public static final String USER_NOT_ONLINE = "Такой пользователь не в сети";
+ public static final String NOT_INPUT_LOCATION = "Вы не ввели широту или долготу, проверте вводимые данные";
 }

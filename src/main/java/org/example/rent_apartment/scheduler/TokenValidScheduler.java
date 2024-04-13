@@ -21,6 +21,7 @@ public class TokenValidScheduler {
 
     private final UserInfoRepository userInfoRepository;
     private final TokenSaveRepository tokenSaveRepository;
+    private final static int DAYS_SAVE_TOKEN = 29;
 
     @Scheduled(fixedRate = 120000)
     public void checkValidTokens() {
@@ -56,7 +57,8 @@ public class TokenValidScheduler {
     }
 
     private boolean compareDateToken (LocalDateTime timeToken) {
-        return timeToken.isAfter(LocalDateTime.now());
+        LocalDateTime expirationTime = timeToken.plusDays(DAYS_SAVE_TOKEN);
+        return expirationTime.isAfter(LocalDateTime.now());
     }
 
 }
