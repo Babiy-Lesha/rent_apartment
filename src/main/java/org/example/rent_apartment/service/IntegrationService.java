@@ -1,5 +1,6 @@
 package org.example.rent_apartment.service;
 
+import org.example.rent_apartment.model.dto.GeoResponseDto;
 import org.example.rent_apartment.model.dto.TestObject;
 
 public interface IntegrationService {
@@ -8,6 +9,6 @@ public interface IntegrationService {
 
     String postIntegrationTest(TestObject testObject);
 
-    String getJsonUserLocationInfo(String url, String longitude, String latitude, String keyValue);
+    GeoResponseDto getJsonUserLocationInfo(String longitude, String latitude);
 
 }

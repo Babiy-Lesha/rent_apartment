@@ -6,6 +6,9 @@ import org.example.rent_apartment.model.entity.UserInfoEntity;
 import org.example.rent_apartment.repository.TokenSaveRepository;
 import org.example.rent_apartment.repository.UserInfoRepository;
 import org.example.rent_apartment.service.impl.Base64Service;
+import org.example.rent_apartment.service.impl.IntegrationServiceImpl;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
@@ -13,11 +16,12 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDateTime;
 import java.util.List;
 
-@Slf4j
 @EnableScheduling
 @RequiredArgsConstructor
 @Service
 public class TokenValidScheduler {
+
+    private static final Logger log = LoggerFactory.getLogger(TokenValidScheduler.class);
 
     private final UserInfoRepository userInfoRepository;
     private final TokenSaveRepository tokenSaveRepository;

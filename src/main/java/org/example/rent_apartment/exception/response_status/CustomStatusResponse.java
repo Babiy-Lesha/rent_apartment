@@ -30,4 +30,5 @@ public class CustomStatusResponse {
  public static final String INCORRECT_PASSWORD = "неверный пароль";
  public static final String USER_NOT_ONLINE = "Такой пользователь не в сети";
  public static final String NOT_INPUT_LOCATION = "Вы не ввели широту или долготу, проверте вводимые данные";
+ public static final String BAD_REQUEST_INPUT_LOCATION = "По вашей долготе и широте не удалось найти местоположения";
 }

@@ -6,6 +6,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import org.example.rent_apartment.exception.ApartmentException;
 import org.example.rent_apartment.mapper.RentApartmentMapper;
+import org.example.rent_apartment.model.dto.GeoResponseDto;
 import org.example.rent_apartment.model.dto.RequestApartmentInfoDto;
 import org.example.rent_apartment.model.dto.apartment_dto.InfoApartmentDto;
 import org.example.rent_apartment.model.entity.InfoAddresEntity;
@@ -18,6 +19,8 @@ import org.example.rent_apartment.repository.IntegrationInfoRepository;
 import org.example.rent_apartment.repository.PhotoApartmentRepository;
 import org.example.rent_apartment.service.IntegrationService;
 import org.example.rent_apartment.service.RentApartmentService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -34,10 +37,11 @@ import static org.example.rent_apartment.exception.response_status.CustomStatusR
 @RequiredArgsConstructor
 public class RentApartmentServiceImpl implements RentApartmentService {
 
+    private static final Logger log = LoggerFactory.getLogger(RentApartmentServiceImpl.class);
+
     private final InfoAddressRepository addressRepository;
     private final InfoApartmentRoomRepository apartmentRoomRepository;
     private final PhotoApartmentRepository photoRepository;
-    private final IntegrationInfoRepository integratorInfoRepository;
 
     private final RentApartmentMapper rentApartmentMapper;
     private final IntegrationService integrationService;
@@ -47,6 +51,7 @@ public class RentApartmentServiceImpl implements RentApartmentService {
 
         InfoAddresEntity apartmentName = addressRepository.getApartmentByName(infoApartmentDto.getNameApartment());
         if (!isNull(apartmentName)) {
+            log.error("RentApartmentServiceImpl: addApartment = " + APARTMENT_EXISTS);
             throw new ApartmentException(APARTMENT_EXISTS, NOT_UNIQ_ADDRES);
         }
 
@@ -55,11 +60,13 @@ public class RentApartmentServiceImpl implements RentApartmentService {
 
         addressEntity.setApartment(infoApartmentRoomEntity);
         addressRepository.save(addressEntity);
+        log.info("RentApartmentServiceImpl: addApartment = апартамент добавлен в базу данных");
         return REGISTRATION_APARTMENT_SUCCESS;
     }
 
     public String deleteAddressApartmentById(Long id) {
         addressRepository.deleteById(id);
+        log.info("RentApartmentServiceImpl: deleteAddressApartmentById = апартамент по " + id + " удален из базы данных");
         return APARTMENT_DELETE_SUCCESS;
     }
 
@@ -68,6 +75,7 @@ public class RentApartmentServiceImpl implements RentApartmentService {
 
         InfoAddresEntity apartment = addressRepository.getApartmentByName(apartmentName);
         if (isNull(apartment)) {
+            log.error("RentApartmentServiceImpl: addPhotoApp = " + APARTMENT_NO_EXISTS);
             throw new ApartmentException(APARTMENT_NO_EXISTS, NOT_UNIQ_ADDRES);
         }
 
@@ -76,6 +84,7 @@ public class RentApartmentServiceImpl implements RentApartmentService {
         String encodePhoto = Base64Service.encodeRentAppPhoto(photo);
         photoEntity.setEncodePhoto(encodePhoto);
         photoRepository.save(photoEntity);
+        log.info("RentApartmentServiceImpl: addPhotoApp = фото добавлено в базу данных");
         return PHOTO_ADD_SUCCESS;
     }
 
@@ -102,9 +111,7 @@ public class RentApartmentServiceImpl implements RentApartmentService {
     }
 
     private List<InfoApartmentRoomEntity> showApartmentsByUserLocation(RequestApartmentInfoDto apartmentInfoDto) {
-        if (checkInputLongitudeAndLatitude(apartmentInfoDto)) {
-            throw new ApartmentException(NOT_INPUT_LOCATION, BAD_INPUT_LOCATION);
-        }
+        checkInputLongitudeAndLatitude(apartmentInfoDto);
 
         String cityByUserLocation = showCityByUserLocation(apartmentInfoDto.getLongitude(), apartmentInfoDto.getLatitude());
         if (!cityByUserLocation.isEmpty()) {
@@ -115,34 +122,28 @@ public class RentApartmentServiceImpl implements RentApartmentService {
         return new ArrayList<>();
     }
 
-    private boolean checkInputLongitudeAndLatitude (RequestApartmentInfoDto apartmentInfoDto) {
-        return isNull(apartmentInfoDto.getLatitude()) || isNull(apartmentInfoDto.getLongitude()) || apartmentInfoDto.getLatitude().isEmpty() || apartmentInfoDto.getLongitude().isEmpty();
+    private void checkInputLongitudeAndLatitude (RequestApartmentInfoDto apartmentInfoDto) {
+        if (isNull(apartmentInfoDto.getLatitude()) || isNull(apartmentInfoDto.getLongitude()) || apartmentInfoDto.getLatitude().isEmpty() || apartmentInfoDto.getLongitude().isEmpty()) {
+            log.error("RentApartmentServiceImpl: checkInputLongitudeAndLatitude = " + NOT_INPUT_LOCATION);
+            throw new ApartmentException(NOT_INPUT_LOCATION, BAD_INPUT_LOCATION);
+        }
     }
 
     private String showCityByUserLocation(String longitude, String latitude) {
-        IntegrationEntity geo = integratorInfoRepository.findById("GEO").get();
-        String urlGeo = geo.getUrl();
-        String key_value = Base64Service.decodeRentApp(geo.getKeyValue());
-        String jsonUserLocationInfo = integrationService.getJsonUserLocationInfo(urlGeo, longitude, latitude, key_value);
-
-        return getCityUserByLocation(jsonUserLocationInfo);
+        GeoResponseDto jsonUserLocationInfo = integrationService.getJsonUserLocationInfo(longitude, latitude);
+        return getLocation(jsonUserLocationInfo);
     }
 
-    private String getCityUserByLocation(String jsonUserLocationInfo) {
-        try {
-            /**
-             * посмотреть что там не только city передается "town" Korkino (54.892493+61.393049)
-             * Если не существующая долгота то results []
-             */
-            ObjectMapper mapper = new ObjectMapper();
-            JsonNode rootNode = mapper.readTree(jsonUserLocationInfo);
-            JsonNode cityNode = rootNode.get("results").get(0).get("components").get("city");
-            if (!isNull(cityNode)) {
-                return cityNode.asText();
-            }
-            return "";
-        } catch (JsonProcessingException exception) {
+    private String getLocation (GeoResponseDto geoResponseDto) {
+        String city = geoResponseDto.getResults().get(0).getComponentsDto().getCity();
+        String town = geoResponseDto.getResults().get(0).getComponentsDto().getTown();
+        if (isNull(city) && isNull(town)) {
+            log.info("RentApartmentServiceImpl: getLocation = получили локацию и не city и не town");
             return "";
         }
+        if (isNull(city)) {
+            return town;
+        }
+        return city;
     }
 }

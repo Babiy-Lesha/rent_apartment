@@ -15,6 +15,8 @@ import org.example.rent_apartment.model.entity.token_save_entity.TokenSaveEntity
 import org.example.rent_apartment.repository.TokenSaveRepository;
 import org.example.rent_apartment.repository.UserInfoRepository;
 import org.example.rent_apartment.service.AuthUserService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -28,6 +30,8 @@ import static org.example.rent_apartment.exception.response_status.CustomStatusR
 @Service
 @RequiredArgsConstructor
 public class AuthUserServiceImpl implements AuthUserService {
+
+    private static final Logger log = LoggerFactory.getLogger(AuthUserServiceImpl.class);
 
     private final UserInfoRepository userInfoRepository;
     private final TokenSaveRepository tokenSaveRepository;
@@ -56,17 +60,20 @@ public class AuthUserServiceImpl implements AuthUserService {
 //        UserInfoEntity userByNickName = userInfoRepository.getUserByNickName(userRegistrationDto.getNickName());
         UserInfoEntity userByNickName = userByNickName(userRegistrationDto.getNickName());
         if (!isNull(userByNickName)) {
+            log.error("AuthUserServiceImpl: registration = " + NICKNAME_EXISTS);
             throw new AuthException(NICKNAME_EXISTS, BAD_REG);
         }
 
         UserInfoEntity userByLogin = userInfoRepository.getUserByLoginUser(userRegistrationDto.getLoginUser());
         if(!isNull(userByLogin)) {
+            log.error("AuthUserServiceImpl: registration = " + LOGIN_EXISTS);
             throw new AuthException(LOGIN_EXISTS, BAD_REG);
         }
 
 //        UserInfoEntity userInfoEntity = userMapper.userDtoToUserEntity(userRegistrationDto);
         UserInfoEntity userInfoEntity = rentApartmentMapper.userDtoToUserEntity(userRegistrationDto);
         userInfoRepository.save(userInfoEntity);
+        log.info("AuthUserServiceImpl: registration пользователь добавлен в базу данных");
         return REGISTRATION_SUCCESS;
     }
 
@@ -88,6 +95,7 @@ public class AuthUserServiceImpl implements AuthUserService {
     public String logAuth(String token) {
         UserInfoEntity user = userInfoRepository.getUserByToken(Base64Service.encodeRentApp(token));
         if (isNull(user)) {
+            log.error("AuthUserServiceImpl: logAuth = " + USER_NOT_ONLINE);
             throw new AuthException(USER_NOT_ONLINE, BAD_AUTH_LOG);
         }
 
@@ -102,6 +110,7 @@ public class AuthUserServiceImpl implements AuthUserService {
     public void checkToken (String token) {
         UserInfoEntity user = userInfoRepository.getUserByToken(Base64Service.encodeRentApp(token));
         if (isNull(user)) {
+            log.error("AuthUserServiceImpl: checkToken = " + USER_NOT_ONLINE);
             throw new ApartmentException(USER_NOT_ONLINE, NOT_UNIQ_REG);
         }
     }
@@ -109,6 +118,7 @@ public class AuthUserServiceImpl implements AuthUserService {
     private UserInfoEntity getUserByLogin(String loginUser) {
         UserInfoEntity user = userInfoRepository.getUserByLoginUser(loginUser);
         if (isNull(user)) {
+            log.error("AuthUserServiceImpl: UserInfoEntity = " + LOGIN_NO_EXISTS);
             throw new AuthException(LOGIN_NO_EXISTS, BAD_REG);
         }
         return user;
@@ -132,6 +142,7 @@ public class AuthUserServiceImpl implements AuthUserService {
 
     private void checkPassword(String userPassword, String password) {
         if (!userPassword.equals(password)) {
+            log.error("AuthUserServiceImpl: checkPassword = " + INCORRECT_PASSWORD);
             throw new AuthException(INCORRECT_PASSWORD, BAD_PASS_LOG);
         }
     }
