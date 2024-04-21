@@ -18,7 +18,7 @@ public class AuthUserController {
     private final AuthUserService registrationService;
 
     @PostMapping(URL_REGISTRATION)
-    public String registration (@RequestBody UserRegistrationDto user) {
+    public String registration(@RequestBody UserRegistrationDto user) {
         return registrationService.registration(user);
     }
 

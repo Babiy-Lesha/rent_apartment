@@ -12,5 +12,4 @@ public class ApartmentException extends RuntimeException {
         this.statusCode = statusCode;
     }
 
-
 }

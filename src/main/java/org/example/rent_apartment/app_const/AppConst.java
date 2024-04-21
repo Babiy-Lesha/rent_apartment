@@ -15,7 +15,6 @@ public class AppConst {
     public static final String URL_ADD_PHOTO_APARTMENT = BASE_PHOTO + "/add_photo";
 
 
-
     /**
      * message success
      */
@@ -26,6 +25,5 @@ public class AppConst {
     public static final String REGISTRATION_APARTMENT_SUCCESS = "Апартамент зарегестрирован";
     public static final String PHOTO_ADD_SUCCESS = "Фотография успешно добавлена";
     public static final String APARTMENT_DELETE_SUCCESS = "Апартамент успешно удален";
-
 
 }

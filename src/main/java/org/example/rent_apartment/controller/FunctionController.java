@@ -3,8 +3,8 @@ package org.example.rent_apartment.controller;
 import lombok.RequiredArgsConstructor;
 import org.example.rent_apartment.model.dto.RequestApartmentInfoDto;
 import org.example.rent_apartment.model.dto.apartment_dto.InfoApartmentDto;
-import org.example.rent_apartment.service.RentApartmentService;
 import org.example.rent_apartment.service.AuthUserService;
+import org.example.rent_apartment.service.RentApartmentService;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -32,15 +32,13 @@ public class FunctionController {
     }
 
     @PostMapping(URL_ADD_PHOTO_APARTMENT)
-    public String addPhotoApp (@RequestParam String nameApartment, @RequestBody MultipartFile file) {
+    public String addPhotoApp(@RequestParam String nameApartment, @RequestBody MultipartFile file) {
         return rentApartment.addPhotoApp(nameApartment, file);
     }
 
     @PostMapping(URL_FIND_INFO_APARTMENT)
-    public List<InfoApartmentDto> showApartments (@RequestBody RequestApartmentInfoDto apartmentInfoDto) {
+    public List<InfoApartmentDto> showApartments(@RequestBody RequestApartmentInfoDto apartmentInfoDto) {
         return rentApartment.showApartments(apartmentInfoDto);
     }
-
-
 
 }

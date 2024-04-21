@@ -18,6 +18,7 @@ import org.example.rent_apartment.service.AuthUserService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -37,38 +38,12 @@ public class AuthUserServiceImpl implements AuthUserService {
     private final TokenSaveRepository tokenSaveRepository;
     private final RentApartmentMapper rentApartmentMapper;
     private final EntityManager entityManager;
-//    private final UserMapper userMapper;
-
-
-    private UserInfoEntity userByNickName(String nickName) {
-        CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
-        CriteriaQuery<UserInfoEntity> query = criteriaBuilder.createQuery(UserInfoEntity.class);
-        Root<UserInfoEntity> root = query.from(UserInfoEntity.class);
-
-        query.select(root).where(criteriaBuilder.equal(root.get("nickName"), nickName));
-
-        List<UserInfoEntity> resultList = entityManager.createQuery(query).getResultList();
-        if (!resultList.isEmpty()) {
-            return resultList.get(0);
-        } else {
-            return null;
-        }
-    }
 
     @Override
     public String registration(UserRegistrationDto userRegistrationDto) {
-//        UserInfoEntity userByNickName = userInfoRepository.getUserByNickName(userRegistrationDto.getNickName());
-        UserInfoEntity userByNickName = userByNickName(userRegistrationDto.getNickName());
-        if (!isNull(userByNickName)) {
-            log.error("AuthUserServiceImpl: registration = " + NICKNAME_EXISTS);
-            throw new AuthException(NICKNAME_EXISTS, BAD_REG);
-        }
 
-        UserInfoEntity userByLogin = userInfoRepository.getUserByLoginUser(userRegistrationDto.getLoginUser());
-        if(!isNull(userByLogin)) {
-            log.error("AuthUserServiceImpl: registration = " + LOGIN_EXISTS);
-            throw new AuthException(LOGIN_EXISTS, BAD_REG);
-        }
+        checkIfNickNameExists(userRegistrationDto.getNickName());
+        checkIfLoginExists(userRegistrationDto.getLoginUser());
 
 //        UserInfoEntity userInfoEntity = userMapper.userDtoToUserEntity(userRegistrationDto);
         UserInfoEntity userInfoEntity = rentApartmentMapper.userDtoToUserEntity(userRegistrationDto);
@@ -92,6 +67,7 @@ public class AuthUserServiceImpl implements AuthUserService {
     }
 
     @Override
+    @Transactional
     public String logAuth(String token) {
         UserInfoEntity user = userInfoRepository.getUserByToken(Base64Service.encodeRentApp(token));
         if (isNull(user)) {
@@ -100,14 +76,12 @@ public class AuthUserServiceImpl implements AuthUserService {
         }
 
         tokenSaveRepository.deleteByTokenDecode(token);
-
         user.setToken(null);
-
         userInfoRepository.save(user);
         return LOG_AUTH_SUCCESS;
     }
 
-    public void checkToken (String token) {
+    public void checkToken(String token) {
         UserInfoEntity user = userInfoRepository.getUserByToken(Base64Service.encodeRentApp(token));
         if (isNull(user)) {
             log.error("AuthUserServiceImpl: checkToken = " + USER_NOT_ONLINE);
@@ -154,63 +128,47 @@ public class AuthUserServiceImpl implements AuthUserService {
         userInfoRepository.save(user);
     }
 
-    private TokenSaveEntity createTokenSaveEntity (String token, String encodeToken) {
+    private TokenSaveEntity createTokenSaveEntity(String token, String encodeToken) {
         TokenSaveEntity tokenSaveEntity = new TokenSaveEntity();
         tokenSaveEntity.setTokenEncode(encodeToken);
         tokenSaveEntity.setTokenDecode(token);
         return tokenSaveEntity;
     }
 
+    private UserInfoEntity userByNickName(String nickName) {
+        CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
+        CriteriaQuery<UserInfoEntity> query = criteriaBuilder.createQuery(UserInfoEntity.class);
+        Root<UserInfoEntity> root = query.from(UserInfoEntity.class);
+
+        query.select(root).where(criteriaBuilder.equal(root.get("nickName"), nickName));
+
+        List<UserInfoEntity> resultList = entityManager.createQuery(query).getResultList();
+        if (!resultList.isEmpty()) {
+            return resultList.get(0);
+        } else {
+            return null;
+        }
+    }
+
+    private void checkIfNickNameExists(String nickName) {
+//        UserInfoEntity userByNickName = userInfoRepository.getUserByNickName(userRegistrationDto.getNickName());
+        UserInfoEntity userByNickName = userByNickName(nickName);
+        if (!isNull(userByNickName)) {
+            log.error("AuthUserServiceImpl: registration = " + NICKNAME_EXISTS);
+            throw new AuthException(NICKNAME_EXISTS, BAD_REG);
+        }
+    }
+
+    private void checkIfLoginExists(String loginUser) {
+        UserInfoEntity userByLogin = userInfoRepository.getUserByLoginUser(loginUser);
+        if (!isNull(userByLogin)) {
+            log.error("AuthUserServiceImpl: registration = " + LOGIN_EXISTS);
+            throw new AuthException(LOGIN_EXISTS, BAD_REG);
+        }
+    }
+
     private String generateNewToken() {
         return UUID.randomUUID().toString() + "|" + LocalDateTime.now().plusDays(1L);
     }
-
-
-
-    //    @Override
-//    public String auth(UserAuthDto userAuthDto) {
-//        UserInfoEntity user = userInfoRepository.getUserByLoginUser(userAuthDto.getLoginUser());
-//        if(isNull(user)) {
-//            throw new AuthException(LOGIN_NO_EXISTS, BAD_REG);
-//        }
-//
-//        if (!(user.getPasswordUser().equals(userAuthDto.getPasswordUser()))) {
-//            throw new AuthException(INCORRECT_PASSWORD, BAD_PASS_LOG);
-//        }
-//
-//        String token = generateNewToken();
-//        String encodeToken = Base64Service.encodeRentApp(token);
-//
-//        TokenSaveEntity tokenSaveEntity = createTokenSaveEntity(token, encodeToken);
-//        tokenSaveRepository.save(tokenSaveEntity);
-//
-//        user.setToken(encodeToken);
-//        userInfoRepository.save(user);
-//
-//        return AUTH_SUCCESS + " токен: " + token;
-//    }
-//
-//    @Override
-//    public String authAdmin(UserAuthDto userAuthDto) {
-//        UserInfoEntity user = userInfoRepository.getUserByLoginUser(userAuthDto.getLoginUser());
-//        if(isNull(user)) {
-//            throw new AuthException(LOGIN_NO_EXISTS, BAD_REG);
-//        }
-//
-//        if (!(user.getPasswordUser().equals(userAuthDto.getPasswordUser()))) {
-//            throw new AuthException(INCORRECT_PASSWORD, BAD_PASS_LOG);
-//        }
-//
-//        String tokenAdmin = "admin-" + generateNewToken();
-//        String encodeTokenAdmin = Base64Service.encodeRentApp(tokenAdmin);
-//
-//        TokenSaveEntity tokenSaveEntity = createTokenSaveEntity(tokenAdmin, encodeTokenAdmin);
-//        tokenSaveRepository.save(tokenSaveEntity);
-//
-//        user.setToken(encodeTokenAdmin);
-//        userInfoRepository.save(user);
-//
-//        return "Для администратора " + AUTH_SUCCESS + " токен: " + tokenAdmin;
-//    }
 
 }

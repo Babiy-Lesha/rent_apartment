@@ -15,7 +15,6 @@ public interface UserInfoRepository extends JpaRepository<UserInfoEntity, Long> 
     UserInfoEntity getUserInfoEntityByLoginUser(String loginUser);
     UserInfoEntity getUserInfoEntityByToken(String token);
 
-
     //нативный запрос (проблема n + 1) замена метода getUserInfoEntityByNickName
     // (запрос напрямую на базе данных, используя SQL запрос)
     @Query(nativeQuery = true, value = "SELECT * FROM user_info WHERE nick_name =  :nickName")
@@ -30,7 +29,5 @@ public interface UserInfoRepository extends JpaRepository<UserInfoEntity, Long> 
     UserInfoEntity getUserByToken(String token);
 
     List<UserInfoEntity> getUserInfoEntitiesByTokenNotNull();
-
-
 
 }

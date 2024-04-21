@@ -17,5 +17,4 @@ public class ExceptionHandlerApp {
         return ResponseEntity.status(exception.getStatusCode()).body(exception.getMessage());
     }
 
-
 }
