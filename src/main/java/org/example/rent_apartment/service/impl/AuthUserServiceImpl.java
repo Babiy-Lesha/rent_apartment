@@ -70,10 +70,7 @@ public class AuthUserServiceImpl implements AuthUserService {
     @Transactional
     public String logAuth(String token) {
         UserInfoEntity user = userInfoRepository.getUserByToken(Base64Service.encodeRentApp(token));
-        if (isNull(user)) {
-            log.error("AuthUserServiceImpl: logAuth = " + USER_NOT_ONLINE);
-            throw new AuthException(USER_NOT_ONLINE, BAD_AUTH_LOG);
-        }
+        checkToken(token);
 
         tokenSaveRepository.deleteByTokenDecode(token);
         user.setToken(null);

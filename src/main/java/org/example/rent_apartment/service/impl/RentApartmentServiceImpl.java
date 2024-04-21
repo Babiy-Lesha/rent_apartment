@@ -44,7 +44,8 @@ public class RentApartmentServiceImpl implements RentApartmentService {
     @Override
     public String addApartment(String token, InfoApartmentDto infoApartmentDto) {
 
-        InfoAddresEntity apartmentName = addressRepository.getApartmentByName(infoApartmentDto.getNameApartment());
+        List<InfoAddresEntity> apartments = addressRepository.getApartmentByName(infoApartmentDto.getNameApartment());
+        InfoAddresEntity apartmentName = apartments.isEmpty() ? null : apartments.get(0);
         if (!isNull(apartmentName)) {
             log.error("RentApartmentServiceImpl: addApartment = " + APARTMENT_EXISTS);
             throw new ApartmentException(APARTMENT_EXISTS, NOT_UNIQ_ADDRESS);
@@ -68,7 +69,8 @@ public class RentApartmentServiceImpl implements RentApartmentService {
     @Override
     public String addPhotoApp(String apartmentName, MultipartFile photo) {
 
-        InfoAddresEntity apartment = addressRepository.getApartmentByName(apartmentName);
+        List<InfoAddresEntity> apartments = addressRepository.getApartmentByName(apartmentName);
+        InfoAddresEntity apartment = apartments.isEmpty() ? null : apartments.get(0);
         if (isNull(apartment)) {
             log.error("RentApartmentServiceImpl: addPhotoApp = " + APARTMENT_NO_EXISTS);
             throw new ApartmentException(APARTMENT_NO_EXISTS, NOT_UNIQ_ADDRESS);
