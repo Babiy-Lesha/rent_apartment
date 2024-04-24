@@ -98,6 +98,9 @@ public class RentApartmentServiceImpl implements RentApartmentService {
             listApartments = showApartmentsByUserLocation(apartmentInfoDto);
         }
 
+        /**
+         * поменять актуальный пароль
+         */
         List<InfoApartmentDto> infoApartmentDtoList = rentApartmentMapperList(listApartments);
         mailSenderService.sendEmail(conversionListInfoApartmentToMessage(infoApartmentDtoList),
                 "showApartments", apartmentInfoDto.getEmailAddress());
