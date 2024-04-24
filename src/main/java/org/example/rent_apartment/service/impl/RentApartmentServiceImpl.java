@@ -13,6 +13,7 @@ import org.example.rent_apartment.repository.InfoAddressRepository;
 import org.example.rent_apartment.repository.InfoApartmentRoomRepository;
 import org.example.rent_apartment.repository.PhotoApartmentRepository;
 import org.example.rent_apartment.service.IntegrationService;
+import org.example.rent_apartment.service.MailSenderService;
 import org.example.rent_apartment.service.RentApartmentService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -40,6 +41,7 @@ public class RentApartmentServiceImpl implements RentApartmentService {
 
     private final RentApartmentMapper rentApartmentMapper;
     private final IntegrationService integrationService;
+    private final MailSenderService mailSenderService;
 
     @Override
     public String addApartment(String token, InfoApartmentDto infoApartmentDto) {
@@ -95,7 +97,20 @@ public class RentApartmentServiceImpl implements RentApartmentService {
         } else {
             listApartments = showApartmentsByUserLocation(apartmentInfoDto);
         }
-        return rentApartmentMapperList(listApartments);
+
+        List<InfoApartmentDto> infoApartmentDtoList = rentApartmentMapperList(listApartments);
+        mailSenderService.sendEmail(conversionListInfoApartmentToMessage(infoApartmentDtoList),
+                "showApartments", apartmentInfoDto.getEmailAddress());
+
+        return infoApartmentDtoList;
+    }
+
+    private String conversionListInfoApartmentToMessage (List<InfoApartmentDto> dtoList) {
+        StringBuilder builder = new StringBuilder();
+        for(InfoApartmentDto apartmentDto : dtoList) {
+            builder.append(apartmentDto.toString());
+        }
+        return builder.toString();
     }
 
     private List<InfoApartmentDto> rentApartmentMapperList(List<InfoApartmentRoomEntity> listApartments) {

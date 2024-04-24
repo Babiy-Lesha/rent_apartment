@@ -16,5 +16,4 @@ public interface RentApartmentService {
 
     List<InfoApartmentDto> showApartments(RequestApartmentInfoDto apartmentInfoDto);
 
-
 }

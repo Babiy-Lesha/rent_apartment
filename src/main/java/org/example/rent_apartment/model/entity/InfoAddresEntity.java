@@ -13,8 +13,8 @@ import lombok.NoArgsConstructor;
 public class InfoAddresEntity {
 
     @Id
-    @SequenceGenerator(name="address_infoSequence", sequenceName="address_info_sequence", allocationSize = 1, initialValue = 8)
-    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator="address_infoSequence")
+    @SequenceGenerator(name = "address_infoSequence", sequenceName = "address_info_sequence", allocationSize = 1, initialValue = 8)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "address_infoSequence")
     @Column(name = "id")
     private Long id;
 

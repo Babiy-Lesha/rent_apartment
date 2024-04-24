@@ -8,5 +8,6 @@ public class RequestApartmentInfoDto {
     private Long apartmentId;
     private String latitude;
     private String longitude;
+    private String emailAddress;
 
 }
