@@ -1,6 +1,8 @@
 package org.example.rent_apartment.service.impl;
 
 import lombok.RequiredArgsConstructor;
+import org.apache.hc.client5.http.impl.classic.HttpClients;
+import org.apache.hc.client5.http.classic.HttpClient;
 import org.example.rent_apartment.exception.ApartmentException;
 import org.example.rent_apartment.model.dto.GeoResponseDto;
 import org.example.rent_apartment.model.dto.TestObject;
@@ -11,6 +13,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpMethod;
+import org.springframework.http.client.ClientHttpRequestFactory;
+import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
@@ -22,7 +26,10 @@ public class IntegrationServiceImpl implements IntegrationService {
 
     private static final Logger log = LoggerFactory.getLogger(IntegrationServiceImpl.class);
     private final IntegrationInfoRepository integratorInfoRepository;
-    RestTemplate restTemplate = new RestTemplate();
+
+    HttpClient httpClient = HttpClients.createDefault();
+    ClientHttpRequestFactory requestFactory = new HttpComponentsClientHttpRequestFactory(httpClient);
+    RestTemplate restTemplate = new RestTemplate(requestFactory);
 
     @Override
     public String getIntegrationTest(String value) {
