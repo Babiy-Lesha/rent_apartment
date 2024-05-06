@@ -4,6 +4,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.example.rent_apartment.model.dto.RequestApartmentInfoDto;
+import org.example.rent_apartment.model.dto.RequestBookingInfoDto;
 import org.example.rent_apartment.model.dto.apartment_dto.InfoApartmentDto;
 import org.example.rent_apartment.service.AuthUserService;
 import org.example.rent_apartment.service.RentApartmentService;
@@ -46,6 +47,12 @@ public class FunctionController {
     @Operation(summary = "предоставление пользователю доступных апартаментов по локации/id")
     public List<InfoApartmentDto> showApartments(@RequestBody RequestApartmentInfoDto apartmentInfoDto) {
         return rentApartment.showApartments(apartmentInfoDto);
+    }
+
+    @PostMapping("Бронирование")
+    @Operation(summary = "бронирование")
+    public String bookingApartment (@RequestBody RequestBookingInfoDto requestBookingDto) {
+        return rentApartment.bookingApartment(requestBookingDto);
     }
 
 }

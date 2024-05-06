@@ -5,6 +5,7 @@ import org.example.rent_apartment.exception.ApartmentException;
 import org.example.rent_apartment.mapper.RentApartmentMapper;
 import org.example.rent_apartment.model.dto.GeoResponseDto;
 import org.example.rent_apartment.model.dto.RequestApartmentInfoDto;
+import org.example.rent_apartment.model.dto.RequestBookingInfoDto;
 import org.example.rent_apartment.model.dto.apartment_dto.InfoApartmentDto;
 import org.example.rent_apartment.model.entity.InfoAddresEntity;
 import org.example.rent_apartment.model.entity.InfoApartmentRoomEntity;
@@ -17,6 +18,7 @@ import org.example.rent_apartment.service.MailSenderService;
 import org.example.rent_apartment.service.RentApartmentService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -42,6 +44,8 @@ public class RentApartmentServiceImpl implements RentApartmentService {
     private final RentApartmentMapper rentApartmentMapper;
     private final IntegrationService integrationService;
     private final MailSenderService mailSenderService;
+    private final KafkaTemplate<String, String> kafkaTemplate;
+    public static final String TOPIC_NAME = "my_topic";
 
     @Override
     public String addApartment(String token, InfoApartmentDto infoApartmentDto) {
@@ -106,6 +110,12 @@ public class RentApartmentServiceImpl implements RentApartmentService {
                 "showApartments", apartmentInfoDto.getEmailAddress());
 
         return infoApartmentDtoList;
+    }
+
+    @Override
+    public String bookingApartment(RequestBookingInfoDto requestBookingInfoDto) {
+        kafkaTemplate.send(TOPIC_NAME, requestBookingInfoDto.toString());
+        return null;
     }
 
     private String conversionListInfoApartmentToMessage (List<InfoApartmentDto> dtoList) {

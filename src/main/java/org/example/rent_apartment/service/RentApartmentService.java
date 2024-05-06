@@ -1,6 +1,7 @@
 package org.example.rent_apartment.service;
 
 import org.example.rent_apartment.model.dto.RequestApartmentInfoDto;
+import org.example.rent_apartment.model.dto.RequestBookingInfoDto;
 import org.example.rent_apartment.model.dto.apartment_dto.InfoApartmentDto;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -15,5 +16,7 @@ public interface RentApartmentService {
     String addPhotoApp (String apartmentName, MultipartFile photo);
 
     List<InfoApartmentDto> showApartments(RequestApartmentInfoDto apartmentInfoDto);
+
+    String bookingApartment(RequestBookingInfoDto requestBookingInfoDto);
 
 }
