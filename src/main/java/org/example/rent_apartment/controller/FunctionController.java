@@ -51,7 +51,7 @@ public class FunctionController {
 
     @PostMapping("Бронирование")
     @Operation(summary = "бронирование")
-    public String bookingApartment (@RequestBody RequestBookingInfoDto requestBookingDto) {
+    public String bookingApartment(@RequestBody RequestBookingInfoDto requestBookingDto) {
         return rentApartment.bookingApartment(requestBookingDto);
     }
 

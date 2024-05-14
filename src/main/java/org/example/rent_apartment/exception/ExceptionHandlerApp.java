@@ -8,12 +8,12 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 public class ExceptionHandlerApp {
 
     @ExceptionHandler(AuthException.class)
-    public ResponseEntity<?> processingException (AuthException exception) {
+    public ResponseEntity<?> processingException(AuthException exception) {
         return ResponseEntity.status(exception.getStatusCode()).body(exception.getMessage());
     }
 
     @ExceptionHandler(ApartmentException.class)
-    public ResponseEntity<?> processingException (ApartmentException exception) {
+    public ResponseEntity<?> processingException(ApartmentException exception) {
         return ResponseEntity.status(exception.getStatusCode()).body(exception.getMessage());
     }
 

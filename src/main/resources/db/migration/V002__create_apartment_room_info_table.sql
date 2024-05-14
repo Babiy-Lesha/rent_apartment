@@ -1,9 +1,10 @@
-CREATE TABLE IF NOT EXISTS apartment_room_info (
-      id INT8 PRIMARY KEY,
-      rating_room VARCHAR(255),
-      price_per_day INT4,
-      count_room INT4,
-      have_shower_room BOOLEAN
+CREATE TABLE IF NOT EXISTS apartment_room_info
+(
+    id               INT8 PRIMARY KEY,
+    rating_room      VARCHAR(255),
+    price_per_day    INT4,
+    count_room       INT4,
+    have_shower_room BOOLEAN
 );
 
 CREATE SEQUENCE apartment_room_info_sequence start 2 INCREMENT 1;

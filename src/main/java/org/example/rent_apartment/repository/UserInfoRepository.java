@@ -1,7 +1,6 @@
 package org.example.rent_apartment.repository;
 
 import org.example.rent_apartment.model.entity.UserInfoEntity;
-import org.hibernate.annotations.DialectOverride;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
@@ -12,7 +11,9 @@ import java.util.List;
 public interface UserInfoRepository extends JpaRepository<UserInfoEntity, Long> {
 
     UserInfoEntity getUserInfoEntityByNickName(String nickName);
+
     UserInfoEntity getUserInfoEntityByLoginUser(String loginUser);
+
     UserInfoEntity getUserInfoEntityByToken(String token);
 
     //нативный запрос (проблема n + 1) замена метода getUserInfoEntityByNickName

@@ -13,8 +13,8 @@ import lombok.NoArgsConstructor;
 public class InfoApartmentRoomEntity {
 
     @Id
-    @SequenceGenerator(name="apartment_room_infoSequence", sequenceName="apartment_room_info_sequence", allocationSize = 1, initialValue = 8)
-    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator="apartment_room_infoSequence")
+    @SequenceGenerator(name = "apartment_room_infoSequence", sequenceName = "apartment_room_info_sequence", allocationSize = 1, initialValue = 8)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "apartment_room_infoSequence")
     @Column(name = "id")
     private Long id;
 
@@ -32,11 +32,11 @@ public class InfoApartmentRoomEntity {
 
     /**
      * mappedBy делает связь Bi-directional (то есть и адресс знает об апартаменте, и апартамент знает об адресе
-     *
+     * <p>
      * т.к нет cascade = CascadeType.ALL, то при удаление апартамента, будет вылетать exception,
      * но если вдруг нам все таки захочется удалить апартамент, то вначале надо будет разорвать связь, т.е для обьекта
      * InfoAddresEntity.setApartment(null) и тогда в колонке apartment_id будет значение null и можно удлаить апартамент
-     *
+     * <p>
      * так же можно добавить cascade = CascadeType.ALL (@OneToOne(mappedBy = "apartment", CascadeType.ALL) и тогда будут удалятся вместе
      */
     @OneToOne(mappedBy = "apartment")

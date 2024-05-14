@@ -9,7 +9,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Entity
-@Table (name = "integration_info")
+@Table(name = "integration_info")
 @AllArgsConstructor
 @NoArgsConstructor
 @Data
@@ -19,7 +19,7 @@ public class IntegrationEntity {
     @Column(name = "id")
     private String id;
 
-    @Column (name = "url")
+    @Column(name = "url")
     private String url;
 
     @Column(name = "key_value")

@@ -13,8 +13,8 @@ import lombok.NoArgsConstructor;
 public class TokenSaveEntity {
 
     @Id
-    @SequenceGenerator(name="token_saveSequence", sequenceName="token_save_sequence", allocationSize = 1, initialValue = 1)
-    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator="token_saveSequence")
+    @SequenceGenerator(name = "token_saveSequence", sequenceName = "token_save_sequence", allocationSize = 1, initialValue = 1)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "token_saveSequence")
     @Column(name = "id")
     private Long id;
 

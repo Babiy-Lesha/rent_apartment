@@ -118,9 +118,9 @@ public class RentApartmentServiceImpl implements RentApartmentService {
         return null;
     }
 
-    private String conversionListInfoApartmentToMessage (List<InfoApartmentDto> dtoList) {
+    private String conversionListInfoApartmentToMessage(List<InfoApartmentDto> dtoList) {
         StringBuilder builder = new StringBuilder();
-        for(InfoApartmentDto apartmentDto : dtoList) {
+        for (InfoApartmentDto apartmentDto : dtoList) {
             builder.append(apartmentDto.toString());
         }
         return builder.toString();
