@@ -7,7 +7,8 @@ import lombok.Data;
 @Schema(description = "Информация по аппартаментам")
 public class InfoApartmentDto {
 
-    @Schema(name = "nameApartment", required = true, example = "Лучший апартамент") //required - является ли обязательным поле для заполнения
+    @Schema(name = "nameApartment", required = true, example = "Лучший апартамент")
+    //required - является ли обязательным поле для заполнения
     private String nameApartment;
 
     @Schema(name = "cityApartment", required = true, example = "Yekaterinburg")

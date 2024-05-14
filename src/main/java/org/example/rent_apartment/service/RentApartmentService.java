@@ -9,11 +9,11 @@ import java.util.List;
 
 public interface RentApartmentService {
 
-    String addApartment (String token, InfoApartmentDto infoApartmentDto);
+    String addApartment(String token, InfoApartmentDto infoApartmentDto);
 
     String deleteAddressApartmentById(Long id);
 
-    String addPhotoApp (String apartmentName, MultipartFile photo);
+    String addPhotoApp(String apartmentName, MultipartFile photo);
 
     List<InfoApartmentDto> showApartments(RequestApartmentInfoDto apartmentInfoDto);
 

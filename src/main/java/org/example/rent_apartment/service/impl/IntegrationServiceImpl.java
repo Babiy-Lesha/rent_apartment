@@ -1,8 +1,8 @@
 package org.example.rent_apartment.service.impl;
 
 import lombok.RequiredArgsConstructor;
-import org.apache.hc.client5.http.impl.classic.HttpClients;
 import org.apache.hc.client5.http.classic.HttpClient;
+import org.apache.hc.client5.http.impl.classic.HttpClients;
 import org.example.rent_apartment.exception.ApartmentException;
 import org.example.rent_apartment.model.dto.GeoResponseDto;
 import org.example.rent_apartment.model.dto.TestObject;
@@ -18,7 +18,8 @@ import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
-import static org.example.rent_apartment.exception.response_status.CustomStatusResponse.*;
+import static org.example.rent_apartment.exception.response_status.CustomStatusResponse.BAD_INPUT_LOCATION;
+import static org.example.rent_apartment.exception.response_status.CustomStatusResponse.BAD_REQUEST_INPUT_LOCATION;
 
 @Service
 @RequiredArgsConstructor

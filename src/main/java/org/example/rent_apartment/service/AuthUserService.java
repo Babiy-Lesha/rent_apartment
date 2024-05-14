@@ -11,7 +11,7 @@ public interface AuthUserService {
 
     String logAuth(String token);
 
-    void checkToken (String token);
+    void checkToken(String token);
 
     String authAdmin(UserAuthDto userAuthDto);
 }

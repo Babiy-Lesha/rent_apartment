@@ -16,8 +16,8 @@ import java.time.LocalDateTime;
 public class PhotoApartmentEntity {
 
     @Id
-    @SequenceGenerator(name="photo_appSequence", sequenceName="photo_app_sequence", allocationSize = 1, initialValue = 1)
-    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator="photo_appSequence")
+    @SequenceGenerator(name = "photo_appSequence", sequenceName = "photo_app_sequence", allocationSize = 1, initialValue = 1)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "photo_appSequence")
     @Column(name = "id")
     private Long id;
 

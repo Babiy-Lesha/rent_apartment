@@ -30,7 +30,6 @@ public class MailSenderServiceImpl implements MailSenderService {
         simpleMailMessage.setTo(emailAddress);
 
 
-
         simpleMailMessage.setSubject(subject);
         simpleMailMessage.setText(massage);
 

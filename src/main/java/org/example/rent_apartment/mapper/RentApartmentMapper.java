@@ -15,13 +15,13 @@ import org.mapstruct.MappingConstants;
 public interface RentApartmentMapper {
 
     @Mapping(target = "city", source = "cityApartment")
-    InfoAddresEntity apartmentDtoToApartmentEntity (InfoApartmentDto apartment);
+    InfoAddresEntity apartmentDtoToApartmentEntity(InfoApartmentDto apartment);
 
     InfoApartmentRoomEntity roomDtoToRoomEntity(InfoApartmentDto apartment);
 
-    UserInfoEntity userDtoToUserEntity (UserRegistrationDto userDto);
+    UserInfoEntity userDtoToUserEntity(UserRegistrationDto userDto);
 
-    PhotoApartmentEntity photoDtoToPhotoEntity (PhotoDto photoDto);
+    PhotoApartmentEntity photoDtoToPhotoEntity(PhotoDto photoDto);
 
     @Mapping(target = "cityApartment", source = "infoAddresEntity.city")
     InfoApartmentDto apartmentDtoToApartmentEntity(InfoAddresEntity infoAddresEntity, InfoApartmentRoomEntity infoApartmentRoomEntity);
