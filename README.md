@@ -26,3 +26,4 @@ Hibernate ORM, Maven, Flyway, Docker
 Mockito/JUnit
 Microservices,
 Postman/cURL/Swagger
+Apache Kafka
