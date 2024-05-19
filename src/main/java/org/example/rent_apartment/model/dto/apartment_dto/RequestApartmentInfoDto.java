@@ -1,4 +1,4 @@
-package org.example.rent_apartment.model.dto;
+package org.example.rent_apartment.model.dto.apartment_dto;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;

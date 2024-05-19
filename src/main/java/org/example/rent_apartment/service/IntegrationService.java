@@ -1,7 +1,7 @@
 package org.example.rent_apartment.service;
 
-import org.example.rent_apartment.model.dto.GeoResponseDto;
-import org.example.rent_apartment.model.dto.TestObject;
+import org.example.rent_apartment.model.dto.integration_dto.GeoResponseDto;
+import org.example.rent_apartment.model.dto.integration_dto.TestObject;
 
 public interface IntegrationService {
 

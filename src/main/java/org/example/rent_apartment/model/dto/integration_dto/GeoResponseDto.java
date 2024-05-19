@@ -1,16 +1,17 @@
-package org.example.rent_apartment.model.dto;
+package org.example.rent_apartment.model.dto.integration_dto;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
 
+import java.util.List;
+
 @JsonIgnoreProperties(ignoreUnknown = true, value = {"error"})
 @Data
-public class ComponentsDto {
+public class GeoResponseDto {
 
-    @JsonProperty(value = "town")
-    private String town;
+    @JsonProperty(value = "results")
+    private List<ResultsDto> results;
 
-    @JsonProperty(value = "city")
-    private String city;
+
 }

@@ -3,7 +3,7 @@ package org.example.rent_apartment.controller;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
-import org.example.rent_apartment.model.dto.RequestApartmentInfoDto;
+import org.example.rent_apartment.model.dto.apartment_dto.RequestApartmentInfoDto;
 import org.example.rent_apartment.model.dto.RequestBookingInfoDto;
 import org.example.rent_apartment.model.dto.apartment_dto.InfoApartmentDto;
 import org.example.rent_apartment.service.AuthUserService;
