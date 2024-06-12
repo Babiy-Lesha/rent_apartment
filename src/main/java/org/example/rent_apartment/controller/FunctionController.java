@@ -49,7 +49,7 @@ public class FunctionController {
         return rentApartment.showApartments(apartmentInfoDto);
     }
 
-    @PostMapping("Бронирование")
+    @PostMapping(URL_BOOKING)
     @Operation(summary = "бронирование")
     public String bookingApartment(@RequestBody RequestBookingInfoDto requestBookingDto) {
         return rentApartment.bookingApartment(requestBookingDto);

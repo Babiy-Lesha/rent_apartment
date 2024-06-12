@@ -18,8 +18,12 @@ import org.example.rent_apartment.service.MailSenderService;
 import org.example.rent_apartment.service.RentApartmentService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpMethod;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.client.RestClientException;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.ArrayList;
@@ -45,7 +49,7 @@ public class RentApartmentServiceImpl implements RentApartmentService {
     private final IntegrationService integrationService;
     private final MailSenderService mailSenderService;
     private final KafkaTemplate<String, String> kafkaTemplate;
-    public static final String TOPIC_NAME = "my_topic";
+    public static final String TOPIC_NAME = "topickName";
 
     @Override
     public String addApartment(String token, InfoApartmentDto infoApartmentDto) {
@@ -106,16 +110,44 @@ public class RentApartmentServiceImpl implements RentApartmentService {
          * поменять актуальный пароль
          */
         List<InfoApartmentDto> infoApartmentDtoList = rentApartmentMapperList(listApartments);
-        mailSenderService.sendEmail(conversionListInfoApartmentToMessage(infoApartmentDtoList),
-                "showApartments", apartmentInfoDto.getEmailAddress());
+//        mailSenderService.sendEmail(conversionListInfoApartmentToMessage(infoApartmentDtoList),
+//                "showApartments", apartmentInfoDto.getEmailAddress());
 
         return infoApartmentDtoList;
     }
 
     @Override
+    @Transactional
     public String bookingApartment(RequestBookingInfoDto requestBookingInfoDto) {
-        kafkaTemplate.send(TOPIC_NAME, requestBookingInfoDto.toString());
-        return null;
+        InfoAddresEntity addressApartment = addressRepository.getInfoAddresEntityById(requestBookingInfoDto.getApartmentId());
+        if (isNull(addressApartment)) {
+            log.error("RentApartmentServiceImpl: bookingApartment = " + APARTMENT_NO_EXISTS);
+            throw new ApartmentException(APARTMENT_NO_EXISTS, NOT_UNIQ_ADDRESS);
+        }
+
+        if (addressApartment.isBookingCheck()) {
+            log.error("RentApartmentServiceImpl: bookingApartment = " + "апартамент забронирован");
+            throw new ApartmentException("апартамент забронирован", 603);
+        }
+
+        log.info("RentApartmentServiceImpl: bookingApartment = " + "апартамент с id " + requestBookingInfoDto.getApartmentId() + "забронирован");
+        addressApartment.setBookingCheck(true);
+        addressRepository.save(addressApartment);
+
+        Integer discountBooking = 0;
+        try {
+            discountBooking = integrationService.getDiscountBooking(requestBookingInfoDto);
+            kafkaTemplate.send(TOPIC_NAME, requestBookingInfoDto.toString());
+
+        } catch (RestClientException e) {//ошибка что сервер не доступен
+            //проверить можно ли в топик отправлять обьекты
+            log.info(e.toString());
+            log.info("RentApartmentServiceImpl: bookingApartment = " + "отправили в kafka " + requestBookingInfoDto);
+            kafkaTemplate.send(TOPIC_NAME, requestBookingInfoDto.toString());
+            return "Скидка ушла в кафку)))";
+        }
+
+        return "Скидка составляет: " + discountBooking;
     }
 
     private String conversionListInfoApartmentToMessage(List<InfoApartmentDto> dtoList) {
@@ -155,11 +187,16 @@ public class RentApartmentServiceImpl implements RentApartmentService {
     }
 
     private String showCityByUserLocation(String longitude, String latitude) {
+        System.out.println("showCityByUserLocation - Longitude: " + longitude + ", Latitude: " + latitude); // Debugging line
         GeoResponseDto jsonUserLocationInfo = integrationService.getJsonUserLocationInfo(longitude, latitude);
+        System.out.println("GeoResponseDto: " + jsonUserLocationInfo); // Debugging line
         return getLocation(jsonUserLocationInfo);
     }
 
     private String getLocation(GeoResponseDto geoResponseDto) {
+        if (geoResponseDto == null) {
+            return "";
+        }
         String city = geoResponseDto.getResults().get(0).getComponentsDto().getCity();
         String town = geoResponseDto.getResults().get(0).getComponentsDto().getTown();
         if (isNull(city) && isNull(town)) {

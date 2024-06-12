@@ -12,7 +12,7 @@ import java.util.List;
 @Repository
 public interface InfoAddressRepository extends JpaRepository<InfoAddresEntity, Long> {
 
-    InfoAddresEntity getInfoApartmentEntityByNameApartment(String nameApartment);
+    InfoAddresEntity getInfoAddresEntityById(Long id);
 
     @Query("SELECT app FROM InfoAddresEntity app  WHERE app.nameApartment = :nameApartment")
     List<InfoAddresEntity> getApartmentByName(@Param("nameApartment") String nameApartment);
