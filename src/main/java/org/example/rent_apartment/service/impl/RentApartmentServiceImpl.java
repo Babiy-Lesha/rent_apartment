@@ -119,7 +119,7 @@ public class RentApartmentServiceImpl implements RentApartmentService {
     @Override
     @Transactional
     public String bookingApartment(RequestBookingInfoDto requestBookingInfoDto) {
-        InfoAddresEntity addressApartment = addressRepository.getInfoAddresEntityById(requestBookingInfoDto.getApartmentId());
+        InfoAddresEntity addressApartment = addressRepository.getReferenceById(requestBookingInfoDto.getApartmentId());
         if (isNull(addressApartment)) {
             log.error("RentApartmentServiceImpl: bookingApartment = " + APARTMENT_NO_EXISTS);
             throw new ApartmentException(APARTMENT_NO_EXISTS, NOT_UNIQ_ADDRESS);
