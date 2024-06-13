@@ -1,4 +1,4 @@
-package org.example.rent_apartment.model.dto;
+package org.example.rent_apartment.model.dto.integration_dto;
 
 import lombok.Data;
 import lombok.ToString;

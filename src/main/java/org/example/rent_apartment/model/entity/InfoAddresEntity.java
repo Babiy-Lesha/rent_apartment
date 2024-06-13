@@ -27,6 +27,9 @@ public class InfoAddresEntity {
     @Column(name = "street_apartment")
     private String streetApartment;
 
+    @Column(name = "booking_check")
+    private boolean bookingCheck;
+
     //если я удаляю адресс то и апартмен тоже удалится
     @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @JoinColumn(name = "apartment_id")

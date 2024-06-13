@@ -4,8 +4,9 @@ import lombok.RequiredArgsConstructor;
 import org.apache.hc.client5.http.classic.HttpClient;
 import org.apache.hc.client5.http.impl.classic.HttpClients;
 import org.example.rent_apartment.exception.ApartmentException;
-import org.example.rent_apartment.model.dto.GeoResponseDto;
-import org.example.rent_apartment.model.dto.TestObject;
+import org.example.rent_apartment.model.dto.RequestBookingInfoDto;
+import org.example.rent_apartment.model.dto.integration_dto.GeoResponseDto;
+import org.example.rent_apartment.model.dto.integration_dto.TestObject;
 import org.example.rent_apartment.model.entity.IntegrationEntity;
 import org.example.rent_apartment.repository.IntegrationInfoRepository;
 import org.example.rent_apartment.service.IntegrationService;
@@ -67,5 +68,14 @@ public class IntegrationServiceImpl implements IntegrationService {
             log.error("IntegrationServiceImpl: getJsonUserLocationInfo = " + BAD_REQUEST_INPUT_LOCATION);
             throw new ApartmentException(BAD_REQUEST_INPUT_LOCATION, BAD_INPUT_LOCATION);
         }
+    }
+
+    @Override
+    public Integer getDiscountBooking(RequestBookingInfoDto requestBookingInfoDto) {
+        String urlDiscountBooking = "http://localhost:9099/api/v1/discount";
+        return restTemplate.exchange(urlDiscountBooking,
+                HttpMethod.POST,
+                new HttpEntity<>(requestBookingInfoDto),
+                Integer.class).getBody();
     }
 }

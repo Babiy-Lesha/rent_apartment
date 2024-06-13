@@ -11,6 +11,7 @@ public class AppConst {
     public static final String URL_ADD_NEW_APARTMENT = BASE_FUNCTION + "/add_new_apartment";
     public static final String URL_DELETE_ADDRESS_APARTMENT = BASE_FUNCTION + "/delete_apartment";
     public static final String URL_FIND_INFO_APARTMENT = BASE_FUNCTION + "/info_apartment";
+    public static final String URL_BOOKING = BASE_FUNCTION + "/booking";
 
     public static final String URL_ADD_PHOTO_APARTMENT = BASE_PHOTO + "/add_photo";
 

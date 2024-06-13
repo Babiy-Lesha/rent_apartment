@@ -1,10 +1,14 @@
-package org.example.rent_apartment.model.dto;
+package org.example.rent_apartment.model.dto.apartment_dto;
 
 import io.swagger.v3.oas.annotations.media.Schema;
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Data
 @Schema(description = "Информация для показа доступных апартаментов пользователю")
+@AllArgsConstructor
+@NoArgsConstructor
 public class RequestApartmentInfoDto {
 
     @Schema(name = "apartmentId", example = "15")
